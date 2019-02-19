@@ -1,0 +1,21 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+public class Test {
+
+	public static void main(String[] args) throws Exception {
+		Class.forName("org.apache.derby.jdbc.ClientDriver");
+		Connection con=DriverManager.getConnection(Database.getDBUrl());
+		Database.createTables(con);
+	
+		Dogs d1 = new Dogs(1, "bobo", "german shperd", 5);
+	
+		DogsFacade dogsFacade = new DogsFacade();
+		dogsFacade.insertDog(d1);
+		
+
+		
+
+	}
+
+}
