@@ -1,0 +1,29 @@
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+
+public class Database {
+
+	public static String getDriverData() {
+		return "org.apache.derby.jdbc.ClientDriver";
+	}
+
+	public static String getDBUrl() {
+		return "jdbc:derby://localhost:3301/JBDB;create=true";
+	}
+
+	public static void createTables(Connection con) throws SQLException {
+		Statement stmt = con.createStatement();
+		String sql;
+
+		sql = "create table Dogs ("
+				+ "id integer not null primary key generated always as identity(start with 1, increment by 1), "
+				+ "name varchar(50) not null, " 
+				+ "breed varchar(20) not null, " 
+				+ "age int not null)";
+		stmt.executeUpdate(sql);
+		System.out.println("success:" + sql);
+
+	}
+}
