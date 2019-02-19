@@ -1,0 +1,113 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Set;
+
+public class DogsDBDAO implements DogsDAO {
+	Connection con;
+
+	@Override
+	
+	public void insertDog(Dogs dogs) throws Exception {
+		con = DriverManager.getConnection(Database.getDBUrl());
+		String sql = "INSERT INTO Dogs (name,breed,age)  VALUES(?,?,?)";
+		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+			pstmt.setString(1, dogs.getName());
+			pstmt.setString(2, dogs.getBreed());
+			pstmt.setInt(3, dogs.getAge());
+
+			pstmt.executeUpdate();
+			System.out.println("Dog added" + dogs.toString());
+		} catch (SQLException e) {
+			throw new Exception(e);
+		} finally {
+			con.close();
+		}
+
+	}
+
+	@Override
+	public void removeDog(Dogs dogs) throws Exception {
+		con = DriverManager.getConnection(Database.getDBUrl());
+		String pre1 = "DELETE FROM Dogs WHERE id=?";
+
+		try (PreparedStatement pstm1 = con.prepareStatement(pre1);) {
+			con.setAutoCommit(false);
+			pstm1.setLong(1, dogs.getId());
+			pstm1.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			try {
+				con.rollback();
+			} catch (SQLException e1) {
+				throw new Exception("Database error");
+			}
+			throw new Exception("failed to remove the Dog");
+		} finally {
+			con.close();
+		}
+	}
+
+	@Override
+	public void updateDog(Dogs dogs) throws Exception {
+		con = DriverManager.getConnection(Database.getDBUrl());
+		try (Statement stm = con.createStatement()) {
+			String sql = "UPDATE Dogs info " + " SET name='" + dogs.getName() + "', breed='" + dogs.getBreed()
+					+ "', age='" + dogs.getAge() + "' WHERE ID=" + dogs.getId();
+			stm.executeUpdate(sql);
+		} catch (SQLException e) {
+			throw new Exception("Failed to update the Dog ");
+		}
+
+	}
+
+	@Override
+	public Dogs getDog(long id) throws Exception {
+		con = DriverManager.getConnection(Database.getDBUrl());
+		Dogs dogs = new Dogs();
+		try (Statement stm = con.createStatement()) {
+			String sql = "Select a Dog WHERE ID=" + id;
+			ResultSet rs = stm.executeQuery(sql);
+			rs.next();
+			dogs.setId(rs.getLong(1));
+			dogs.setName(rs.getString(2));
+			dogs.setBreed(rs.getString(3));
+			dogs.setAge(rs.getInt(4));
+
+		} catch (SQLException e) {
+			throw new Exception("unable to get Dog data");
+		} finally {
+			con.close();
+		}
+		return null;
+	}
+
+	@Override
+	public synchronized Set<Dogs> getAllDogs() throws Exception {
+		con = DriverManager.getConnection(Database.getDBUrl());
+		Set<Dogs> set = new HashSet<>();
+		String sql = "SELECT id FROM Dogs";
+		try (Statement stm = con.createStatement(); ResultSet rs = stm.executeQuery(sql)) {
+			while (rs.next()) {
+				long id = rs.getLong(1);
+				String name = rs.getString(1);
+				String breed = rs.getString(1);
+				int age = rs.getInt(1);
+
+				set.add(new Dogs(id, name, breed, age));
+			}
+		} catch (SQLException e) {
+			System.out.println(e);
+			throw new Exception("cannot get Dog data");
+		} finally {
+			con.close();
+		}
+		return set;
+	}
+
+}
