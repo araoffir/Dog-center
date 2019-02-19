@@ -1,0 +1,15 @@
+import java.util.Set;
+
+public interface DogsDAO {
+	void insertDog(Dogs dogs) throws Exception;
+
+	void removeDog(Dogs dogs) throws Exception;
+
+	void updateDog(Dogs dogs) throws Exception;
+
+	Dogs getDog(long id) throws Exception;
+
+	Set<Dogs> getAllDogs() throws Exception;
+
+}
+
