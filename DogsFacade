@@ -1,0 +1,39 @@
+import java.util.Set;
+
+public class DogsFacade {
+	private DogsDBDAO dogsDAO = new DogsDBDAO();
+	private Dogs dogs;
+
+	public DogsFacade(Dogs d) {
+		this.dogs = d;
+	}
+
+	public DogsFacade() {
+	}
+
+	public void insertDog(Dogs dogs) throws Exception {
+		dogsDAO.insertDog(dogs);
+	}
+
+	public void removeDog(Dogs dogs) throws Exception {
+		dogsDAO.insertDog(dogs);
+		
+	}
+
+	public void updateDog(Dogs dogs, String newName, String newBreed, int newAge) throws Exception {
+		dogs.setName(newName);
+		dogs.setBreed(newBreed);
+		dogs.setAge(newAge);
+		dogsDAO.updateDog(dogs);
+	}
+
+	public Dogs dogs() {
+		return dogs;
+	}
+
+	public Set<Dogs> getAllDogs() throws Exception {
+
+		return dogsDAO.getAllDogs();
+	}
+
+}
